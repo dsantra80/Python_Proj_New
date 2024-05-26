@@ -1,16 +1,11 @@
 from flask import Blueprint, request, jsonify
-from transformers import pipeline
-import json
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from config import Config
 
 routes = Blueprint('routes', __name__)
 
-# Load configuration data
-config_data = json.load(open("config.json"))
-HF_TOKEN = config_data["HF_TOKEN"]
-
+# Hugging Face token from config
+HF_TOKEN = Config.HF_TOKEN
 model_name = Config.MODEL_NAME
 
 bnb_config = BitsAndBytesConfig(
@@ -20,21 +15,22 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_compute_dtype=torch.bfloat16
 )
 
-tokenizer = AutoTokenizer.from_pretrained(model_name, token=HF_TOKEN)
+tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=HF_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
 
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     device_map="auto",
     quantization_config=bnb_config,
-    token=HF_TOKEN
+    use_auth_token=HF_TOKEN
 )
 
 text_generator = pipeline(
     "text-generation",
     model=model,
     tokenizer=tokenizer,
-    max_new_tokens=Config.MAX_TOKENS
+    max_new_tokens=Config.MAX_TOKENS,
+    use_auth_token=HF_TOKEN
 )
 
 def get_response(prompt):
