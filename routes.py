@@ -1,4 +1,6 @@
 from flask import Blueprint, request, jsonify
+import json
+import torch
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from config import Config
 
