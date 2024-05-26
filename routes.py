@@ -17,14 +17,14 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_compute_dtype=torch.bfloat16
 )
 
-tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=HF_TOKEN)
+tokenizer = AutoTokenizer.from_pretrained(model_name, token=HF_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
 
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     device_map="auto",
     quantization_config=bnb_config,
-    use_auth_token=HF_TOKEN
+    token=HF_TOKEN
 )
 
 text_generator = pipeline(
@@ -32,7 +32,7 @@ text_generator = pipeline(
     model=model,
     tokenizer=tokenizer,
     max_new_tokens=Config.MAX_TOKENS,
-    use_auth_token=HF_TOKEN
+    token=HF_TOKEN
 )
 
 def get_response(prompt):
