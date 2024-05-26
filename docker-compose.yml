@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  flask_app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - MODEL_NAME=${MODEL_NAME}
+      - MAX_TOKENS=${MAX_TOKENS}
+      - TEMPERATURE=${TEMPERATURE}
+      - HF_TOKEN=${HF_TOKEN}
+    volumes:
+      - .:/app
+    command: ["python", "app.py"]
