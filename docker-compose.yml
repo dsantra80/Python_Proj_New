@@ -12,4 +12,11 @@ services:
       - HF_TOKEN=${HF_TOKEN}
     volumes:
       - .:/app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     command: ["python", "app.py"]
