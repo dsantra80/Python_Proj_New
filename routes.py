@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 import json
 import torch
-from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 from config import Config
 
 routes = Blueprint('routes', __name__)
@@ -10,20 +10,11 @@ routes = Blueprint('routes', __name__)
 HF_TOKEN = Config.HF_TOKEN
 model_name = Config.MODEL_NAME
 
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_use_double_quant=True,
-    bnb_4bit_quant_type="nf4",
-    bnb_4bit_compute_dtype=torch.bfloat16
-)
-
 tokenizer = AutoTokenizer.from_pretrained(model_name, token=HF_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
 
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
-    device_map="auto",
-    quantization_config=bnb_config,
     token=HF_TOKEN
 )
 
